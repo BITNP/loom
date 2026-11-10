@@ -3,6 +3,7 @@ name = "loom"
 version = "0.1.0"
 description = "Raspberry Girl text input module: typed console lines -> waycast input frames."
 readme = "README.md"
+license = "AGPL-3.0-or-later"
 requires-python = ">=3.12"
 authors = [
     { name = "noteas", email = "3818384646@qq.com" }

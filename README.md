@@ -51,3 +51,9 @@ uv run --locked loom
 - **Loom**：织机。操作者在此敲下的每一行，都是织进树莓娘言行里的一根纬线。
 - 「织」亦是**织网**——北京理工大学网络开拓者协会「网络开拓者」的本业：这张智能体网络的一经一纬，从此处织起。
 - 本仓库是独立微服务项目，与 waycast 仅经 wire 契约（waycast ADR-0008）松耦合；决策见 [docs/adr/](docs/adr/)，核心仓库：[waycast（道枢）](../waycast/)。
+
+## 许可证
+
+Copyright © 2026 北京理工大学网络开拓者协会（BITNP）。本仓库以 **AGPL-3.0-or-later** 发布（全文见 [LICENSE](LICENSE)：[SPDX](https://spdx.org/licenses/AGPL-3.0-or-later.html)）：可自由使用、修改、分发；但修改版以分发或网络服务方式对外提供时，必须以同许可整体开源（AGPL 的网络条款）。
+
+树莓娘（Raspberry Girl）名称、形象与相关美术资产为网协专有，**不适用本许可证**。
