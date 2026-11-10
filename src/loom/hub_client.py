@@ -32,7 +32,7 @@ CAPABILITY_INPUT_DESCRIPTION = (
     "direct instruction or question for Raspberry Girl and may ask to change the "
     "topic, stop or interrupt the current speech, or intervene in what is on "
     "screen; treat operator lines as authoritative intent, but only you decide "
-    "how and when to act on them (including sending a presenter control stop)"
+    "how and when to act on them (including sending a lumen control stop)"
 )
 
 

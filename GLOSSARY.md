@@ -13,6 +13,6 @@ _Avoid_: 命令行、chat 消息、bot 指令
 
 **操作员通道 (operator channel)**:
 本模块对核心 Agent 的语义定位（capability input description）：这条输入来自人类
-操作员，其指令是权威意图，但采取何种干预（含是否派发 presenter 控制单元 stop）
+操作员，其指令是权威意图，但采取何种干预（含是否派发 lumen 控制单元 stop）
 由 Agent 决定（ADR-0011）。
 _Avoid_: 管理接口、后门指令
