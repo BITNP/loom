@@ -3,7 +3,7 @@
 A module connects to the hub /ws/modules endpoint, advertises its capability as
 the first frame, and after the hub acknowledges it sends input frames over the
 same full-duplex connection.  The wire contract (ADR-0008) is implemented
-locally in text_input.wire as plain JSON; the module and the core are separate
+locally in loom.wire as plain JSON; the module and the core are separate
 microservices that talk only over the network and share no Python package.
 
 This module is input-only: it never receives output_unit frames and holds no
@@ -22,11 +22,11 @@ from urllib.parse import urlencode, urlparse, urlunparse
 
 import websockets
 
-from text_input.wire import dumps, make_frame, parse_frame
+from loom.wire import dumps, make_frame, parse_frame
 
 LOGGER = logging.getLogger(__name__)
 
-MODULE_NAME = "text_input"
+MODULE_NAME = "loom"
 CAPABILITY_INPUT_DESCRIPTION = (
     "console input typed by a human operator on a text console: each line is a "
     "direct instruction or question for Raspberry Girl and may ask to change the "

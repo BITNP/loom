@@ -8,8 +8,8 @@ import asyncio
 import pytest
 import websockets
 
-from text_input.hub_client import MODULE_NAME, HubConnectionError, InputClient
-from text_input.wire import dumps, make_frame, parse_frame
+from loom.hub_client import MODULE_NAME, HubConnectionError, InputClient
+from loom.wire import dumps, make_frame, parse_frame
 
 
 def _accepting_server(

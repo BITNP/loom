@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import pytest
 
-from text_input.wire import (
+from loom.wire import (
     PROTOCOL_VERSION,
     WireError,
     dumps,
@@ -14,17 +14,17 @@ from text_input.wire import (
 
 
 def test_make_frame_round_trip() -> None:
-    frame = make_frame("input", "text_input", {"content": "你好"}, request_id="r1")
+    frame = make_frame("input", "loom", {"content": "你好"}, request_id="r1")
     parsed = parse_frame(dumps(frame))
     assert parsed["protocol_version"] == PROTOCOL_VERSION
     assert parsed["type"] == "input"
-    assert parsed["module"] == "text_input"
+    assert parsed["module"] == "loom"
     assert parsed["request_id"] == "r1"
     assert parsed["payload"] == {"content": "你好"}
 
 
 def test_defaults_are_explicit() -> None:
-    frame = make_frame("capability", "text_input")
+    frame = make_frame("capability", "loom")
     assert frame["payload"] == {}
     assert frame["request_id"] is None
 

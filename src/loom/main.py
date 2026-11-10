@@ -20,8 +20,8 @@ from typing import Final
 import websockets
 from dotenv import load_dotenv
 
-from text_input.config import DEFAULT_LOG_LEVEL, LOG_LEVEL_KEY, load_settings
-from text_input.hub_client import MODULE_NAME, HubConnectionError, InputClient
+from loom.config import DEFAULT_LOG_LEVEL, LOG_LEVEL_KEY, load_settings
+from loom.hub_client import MODULE_NAME, HubConnectionError, InputClient
 
 LOGGER = logging.getLogger(__name__)
 

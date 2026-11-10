@@ -2,6 +2,10 @@
 
 本模块专属术语。核心语义术语（Input module、Unified input、Invocation、话权决定等）见 [waycast/GLOSSARY.md](../waycast/GLOSSARY.md)。
 
+**机杼 / loom**:
+本仓库（即树莓娘的文本输入模块）的名字，命名来历见 README 末尾「命名来历」（ADR-0001）；wire 上的模块名、CLI 命令与包名均为 `loom`，环境变量前缀 `LOOM_`。旧名 text-input / text_input 不再用于新设计。
+_Avoid_: text-input、text_input（旧标识符）
+
 **控制台输入 (console input)**:
 操作者在文本控制台敲入的一个非空行；一行恰好对应一条 UnifiedInput 和一个 input
 帧，模块不做任何聚合、改写或话权判断。

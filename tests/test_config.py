@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import pytest
 
-from text_input.config import ConfigError, load_settings
+from loom.config import ConfigError, load_settings
 
 
 def test_minimal_settings_and_optional_defaults() -> None:

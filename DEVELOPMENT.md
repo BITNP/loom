@@ -5,7 +5,7 @@
 
 ## 与 waycast 的关系
 
-- 帧格式、capability 结构、连接令牌来自 waycast wire 协议（waycast/src/waycast/wire.py）；本仓库在 `src/text_input/wire.py` 本地实现该客户端侧契约（纯 JSON over WebSocket，无包依赖），不修改协议本身，互操作以 waycast 的实现为权威。
+- 帧格式、capability 结构、连接令牌来自 waycast wire 协议（waycast/src/waycast/wire.py）；本仓库在 `src/loom/wire.py` 本地实现该客户端侧契约（纯 JSON over WebSocket，无包依赖），不修改协议本身，互操作以 waycast 的实现为权威。
 - capability 的 input description 会进入核心 Agent 的系统提示词（waycast capability catalog），是这条通道对 Agent 的语义说明书。
 
 ## 开发

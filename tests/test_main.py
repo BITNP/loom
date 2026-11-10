@@ -6,9 +6,9 @@ import asyncio
 
 import websockets
 
-from text_input.hub_client import MODULE_NAME
-from text_input.main import run_forever
-from text_input.wire import dumps, make_frame, parse_frame
+from loom.hub_client import MODULE_NAME
+from loom.main import run_forever
+from loom.wire import dumps, make_frame, parse_frame
 
 
 class _Lines:
