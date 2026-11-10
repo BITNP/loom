@@ -15,8 +15,9 @@ exactly one input frame triggering one Invocation.
 from __future__ import annotations
 
 import asyncio
+import contextlib
 import logging
-from typing import Any
+from typing import Any, Self
 from urllib.parse import urlencode, urlparse, urlunparse
 
 import websockets
@@ -95,12 +96,10 @@ class InputClient:
         except (websockets.ConnectionClosed, ConnectionError, OSError):
             LOGGER.debug("hub connection closed (reader)")
         finally:
-            try:
+            with contextlib.suppress(Exception):
                 await self._ws.close()
-            except Exception:
-                pass
 
-    async def __aenter__(self) -> "InputClient":
+    async def __aenter__(self) -> Self:
         uri = self._ws_uri()
         try:
             self._ws = await websockets.connect(uri, **self._connect_kwargs())
@@ -139,7 +138,7 @@ class InputClient:
         payload = {"content": content, "source": source, "metadata": metadata or {}}
         await self._ws.send(dumps(make_frame("input", self._name, payload)))
 
-    async def __aexit__(self, *exc_info: Any) -> None:
+    async def __aexit__(self, *exc_info: object) -> None:
         if self._reader is not None:
             self._reader.cancel()
             try:
@@ -152,4 +151,4 @@ class InputClient:
             self._ws = None
 
 
-__all__ = ["InputClient", "HubConnectionError", "MODULE_NAME"]
+__all__ = ["MODULE_NAME", "HubConnectionError", "InputClient"]

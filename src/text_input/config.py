@@ -50,9 +50,9 @@ def load_settings(env: Mapping[str, str] | None = None) -> Settings:
 
 
 __all__ = [
+    "DEFAULT_LOG_LEVEL",
+    "LOG_LEVEL_KEY",
     "ConfigError",
     "Settings",
     "load_settings",
-    "LOG_LEVEL_KEY",
-    "DEFAULT_LOG_LEVEL",
 ]

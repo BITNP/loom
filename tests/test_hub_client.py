@@ -14,7 +14,7 @@ from text_input.wire import dumps, make_frame, parse_frame
 
 def _accepting_server(
     received: list[dict],
-) -> "asyncio.Future[websockets.WebSocketServer]":
+) -> asyncio.Future[websockets.WebSocketServer]:
     """A minimal hub: accept the capability, then record every frame sent."""
 
     async def handler(ws: websockets.ServerConnection) -> None:
