@@ -5,6 +5,7 @@ The only required setting is the waycast hub address; the token and TLS CA are
 optional, mirroring the keys every Raspberry Girl module shares
 (WAYCAST_HUB_URL / WAYCAST_HUB_TOKEN / WAYCAST_TLS_CA).
 """
+
 from __future__ import annotations
 
 import os
@@ -36,7 +37,9 @@ def load_settings(env: Mapping[str, str] | None = None) -> Settings:
     source = os.environ if env is None else env
     hub_url = source.get(WAYCAST_HUB_URL_KEY, "").strip()
     if not hub_url:
-        raise ConfigError(f"{WAYCAST_HUB_URL_KEY}: required setting is missing or empty")
+        raise ConfigError(
+            f"{WAYCAST_HUB_URL_KEY}: required setting is missing or empty"
+        )
     if not hub_url.startswith(("ws://", "wss://")):
         raise ConfigError(f"{WAYCAST_HUB_URL_KEY}: must be a ws:// or wss:// URL")
     return Settings(
@@ -46,4 +49,10 @@ def load_settings(env: Mapping[str, str] | None = None) -> Settings:
     )
 
 
-__all__ = ["ConfigError", "Settings", "load_settings", "LOG_LEVEL_KEY", "DEFAULT_LOG_LEVEL"]
+__all__ = [
+    "ConfigError",
+    "Settings",
+    "load_settings",
+    "LOG_LEVEL_KEY",
+    "DEFAULT_LOG_LEVEL",
+]

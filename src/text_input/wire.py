@@ -11,6 +11,7 @@ both ways:
   module -> hub: capability advertisement (first frame), then input frames
   hub -> module: capability acknowledgement only (this module is input-only)
 """
+
 from __future__ import annotations
 
 import json

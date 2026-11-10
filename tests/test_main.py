@@ -1,4 +1,5 @@
 """Console loop: one line is one input frame; EOF stops, hub drops reconnect."""
+
 from __future__ import annotations
 
 import asyncio

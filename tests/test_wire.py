@@ -1,4 +1,5 @@
 """Client-side wire envelope: frames match the waycast contract (ADR-0008)."""
+
 from __future__ import annotations
 
 import pytest

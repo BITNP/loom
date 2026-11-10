@@ -1,5 +1,6 @@
 """Hub client frame contract: capability handshake and input frames match
 waycast wire (ADR-0008), verified against a local in-process hub stand-in."""
+
 from __future__ import annotations
 
 import asyncio
@@ -11,7 +12,9 @@ from text_input.hub_client import MODULE_NAME, HubConnectionError, InputClient
 from text_input.wire import dumps, make_frame, parse_frame
 
 
-def _accepting_server(received: list[dict]) -> "asyncio.Future[websockets.WebSocketServer]":
+def _accepting_server(
+    received: list[dict],
+) -> "asyncio.Future[websockets.WebSocketServer]":
     """A minimal hub: accept the capability, then record every frame sent."""
 
     async def handler(ws: websockets.ServerConnection) -> None:
@@ -43,7 +46,11 @@ def test_handshake_then_input_frames() -> None:
     assert capability["payload"]["input"]["description"]
     assert first["type"] == "input"
     assert first["module"] == MODULE_NAME
-    assert first["payload"] == {"content": "停下,讲讲第二页", "source": MODULE_NAME, "metadata": {}}
+    assert first["payload"] == {
+        "content": "停下,讲讲第二页",
+        "source": MODULE_NAME,
+        "metadata": {},
+    }
 
 
 def test_hub_rejection_raises() -> None:

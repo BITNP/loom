@@ -1,4 +1,5 @@
 """Settings come from the shared waycast keys only."""
+
 from __future__ import annotations
 
 import pytest
@@ -27,9 +28,7 @@ def test_optional_settings_are_trimmed() -> None:
 
 
 def test_blank_tls_ca_is_none() -> None:
-    settings = load_settings(
-        {"WAYCAST_HUB_URL": "ws://h", "WAYCAST_TLS_CA": "   "}
-    )
+    settings = load_settings({"WAYCAST_HUB_URL": "ws://h", "WAYCAST_TLS_CA": "   "})
     assert settings.tls_ca_path is None
 
 
