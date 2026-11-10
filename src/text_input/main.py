@@ -8,6 +8,7 @@ reconnect; the terminal's own line buffer keeps lines typed while the hub is
 down.  A frame the socket took but the network lost in the instant of a drop
 cannot be recovered (inputs carry no acknowledgement channel).
 """
+
 from __future__ import annotations
 
 import asyncio
@@ -16,8 +17,8 @@ import os
 from collections.abc import Awaitable, Callable
 from typing import Final
 
-import websockets
 from dotenv import load_dotenv
+from httpx2.websockets import WebSocketDisconnect, WebSocketNetworkError
 
 from text_input.config import DEFAULT_LOG_LEVEL, LOG_LEVEL_KEY, load_settings
 from text_input.hub_client import MODULE_NAME, HubConnectionError, InputClient
@@ -74,16 +75,21 @@ async def run_forever(
                     await client.send_input(line, source=MODULE_NAME)
                     pending = None
         except HubConnectionError as exc:
-            LOGGER.warning("hub unavailable: %s; retrying in %.0fs", exc, reconnect_delay)
+            LOGGER.warning(
+                "hub unavailable: %s; retrying in %.0fs", exc, reconnect_delay
+            )
             await asyncio.sleep(reconnect_delay)
-        except (websockets.ConnectionClosed, ConnectionError, OSError):
+        except (WebSocketDisconnect, WebSocketNetworkError, ConnectionError, OSError):
             LOGGER.warning("hub connection dropped; reconnecting")
             await asyncio.sleep(reconnect_delay)
 
 
 def main() -> None:
     load_dotenv()
-    level = os.environ.get(LOG_LEVEL_KEY, DEFAULT_LOG_LEVEL).strip().upper() or DEFAULT_LOG_LEVEL
+    level = (
+        os.environ.get(LOG_LEVEL_KEY, DEFAULT_LOG_LEVEL).strip().upper()
+        or DEFAULT_LOG_LEVEL
+    )
     logging.basicConfig(level=getattr(logging, level, logging.INFO))
     settings = load_settings()
     try:
