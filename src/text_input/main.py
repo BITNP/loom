@@ -17,8 +17,8 @@ import os
 from collections.abc import Awaitable, Callable
 from typing import Final
 
+import websockets
 from dotenv import load_dotenv
-from httpx2.websockets import WebSocketDisconnect, WebSocketNetworkError
 
 from text_input.config import DEFAULT_LOG_LEVEL, LOG_LEVEL_KEY, load_settings
 from text_input.hub_client import MODULE_NAME, HubConnectionError, InputClient
@@ -79,7 +79,7 @@ async def run_forever(
                 "hub unavailable: %s; retrying in %.0fs", exc, reconnect_delay
             )
             await asyncio.sleep(reconnect_delay)
-        except (WebSocketDisconnect, WebSocketNetworkError, ConnectionError, OSError):
+        except (websockets.ConnectionClosed, ConnectionError, OSError):
             LOGGER.warning("hub connection dropped; reconnecting")
             await asyncio.sleep(reconnect_delay)
 
