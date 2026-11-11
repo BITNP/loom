@@ -14,6 +14,7 @@ from __future__ import annotations
 import asyncio
 import logging
 import os
+import random
 from collections.abc import Awaitable, Callable
 from typing import Final
 
@@ -25,8 +26,20 @@ from loom.hub_client import MODULE_NAME, HubConnectionError, InputClient
 
 LOGGER = logging.getLogger(__name__)
 
-HUB_RECONNECT_DELAY_SECONDS: Final = 3.0
+# Hub reconnect backoff, the schedule shared by loom / aria / lumen: start at
+# BASE, double per failed attempt up to MAX, jitter +-20% so modules that were
+# dropped together do not retry in lockstep, reset once a connection is up.
+HUB_RECONNECT_BASE_SECONDS: Final = 1.0
+HUB_RECONNECT_MAX_SECONDS: Final = 30.0
+RECONNECT_JITTER_RATIO: Final = 0.2
 MAX_LINE_LENGTH: Final = 8192
+
+
+def _with_reconnect_jitter(seconds: float) -> float:
+    """Seconds to actually sleep for ``seconds``: uniform jitter of +-20%."""
+    spread = seconds * RECONNECT_JITTER_RATIO
+    return seconds + random.uniform(-spread, spread)
+
 
 # An async callable returning one raw console line; raises EOFError at end.
 LineReader = Callable[[], Awaitable[str]]
@@ -42,19 +55,23 @@ async def run_forever(
     hub_url: str,
     hub_token: str = "",
     tls_ca_path: str | None = None,
-    reconnect_delay: float = HUB_RECONNECT_DELAY_SECONDS,
+    reconnect_base_delay: float = HUB_RECONNECT_BASE_SECONDS,
 ) -> None:
     """Read console lines and forward each as an input frame until EOF.
 
-    Returns cleanly on EOF (stdin closed); any hub failure retries the whole
-    connection after ``reconnect_delay`` seconds.
+    Returns cleanly on EOF (stdin closed); any hub failure retries with
+    exponential backoff from ``reconnect_base_delay`` (doubled per failure,
+    capped at HUB_RECONNECT_MAX_SECONDS, jittered), reset after a connection
+    is established.
     """
     pending: str | None = None  # line owned by the module until the socket takes it
+    delay = reconnect_base_delay
     while True:
         try:
             async with InputClient(
                 hub_url=hub_url, token=hub_token, tls_ca_path=tls_ca_path
             ) as client:
+                delay = reconnect_base_delay  # connection is up: back to first retry
                 while True:
                     if pending is not None:
                         await client.send_input(pending, source=MODULE_NAME)
@@ -75,13 +92,14 @@ async def run_forever(
                     await client.send_input(line, source=MODULE_NAME)
                     pending = None
         except HubConnectionError as exc:
-            LOGGER.warning(
-                "hub unavailable: %s; retrying in %.0fs", exc, reconnect_delay
-            )
-            await asyncio.sleep(reconnect_delay)
+            sleep_seconds = _with_reconnect_jitter(delay)
+            LOGGER.warning("hub unavailable: %s; retrying in %.2fs", exc, sleep_seconds)
+            await asyncio.sleep(sleep_seconds)
         except (websockets.ConnectionClosed, ConnectionError, OSError):
-            LOGGER.warning("hub connection dropped; reconnecting")
-            await asyncio.sleep(reconnect_delay)
+            sleep_seconds = _with_reconnect_jitter(delay)
+            LOGGER.warning("hub connection dropped; retrying in %.2fs", sleep_seconds)
+            await asyncio.sleep(sleep_seconds)
+        delay = min(delay * 2, HUB_RECONNECT_MAX_SECONDS)
 
 
 def main() -> None:

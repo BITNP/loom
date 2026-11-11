@@ -6,8 +6,13 @@ import asyncio
 
 import websockets
 
+from loom import main as main_module
 from loom.hub_client import MODULE_NAME
-from loom.main import run_forever
+from loom.main import (
+    RECONNECT_JITTER_RATIO,
+    _with_reconnect_jitter,
+    run_forever,
+)
 from loom.wire import dumps, make_frame, parse_frame
 
 
@@ -44,7 +49,7 @@ def test_lines_become_input_frames_blank_skipped() -> None:
             run_forever(
                 _Lines(["第一句", "   ", "第二句"]),
                 hub_url=url,
-                reconnect_delay=0.05,
+                reconnect_base_delay=0.05,
             )
         )
         await asyncio.wait_for(done.wait(), timeout=5)
@@ -100,7 +105,7 @@ def test_hub_drop_reconnects_and_keeps_forwarding() -> None:
             run_forever(
                 _GatedLines(),
                 hub_url=url,
-                reconnect_delay=0.05,
+                reconnect_base_delay=0.05,
             )
         )
         await asyncio.wait_for(second_arrived.wait(), timeout=5)
@@ -111,3 +116,47 @@ def test_hub_drop_reconnects_and_keeps_forwarding() -> None:
     asyncio.run(scenario())
     assert inputs == ["打断一下", "第二句照发"]
     assert connections == 2
+
+
+def test_reconnect_jitter_within_bounds() -> None:
+    for seconds in (0.0, 1.0, 30.0):
+        for _ in range(100):
+            value = _with_reconnect_jitter(seconds)
+            assert (
+                seconds * (1 - RECONNECT_JITTER_RATIO)
+                <= value
+                <= seconds * (1 + RECONNECT_JITTER_RATIO)
+            )
+
+
+def test_reconnect_backoff_doubles_until_capped(monkeypatch) -> None:
+    """Unreachable hub: recorded pre-jitter delays double per failure, capped."""
+
+    class _StopLoop(Exception):
+        pass
+
+    recorded: list[float] = []
+
+    def record(seconds: float) -> float:
+        recorded.append(seconds)
+        if len(recorded) == 7:
+            raise _StopLoop
+        return 0.0
+
+    async def scenario() -> None:
+        server = await websockets.serve(lambda ws: None, "127.0.0.1", 0)  # never served
+        port = server.sockets[0].getsockname()[1]
+        server.close()
+        await server.wait_closed()
+        monkeypatch.setattr(main_module, "_with_reconnect_jitter", record)
+        await run_forever(
+            _Lines(["不会到达"]),
+            hub_url=f"ws://127.0.0.1:{port}",
+            reconnect_base_delay=1.0,
+        )
+
+    try:
+        asyncio.run(scenario())
+    except _StopLoop:
+        pass
+    assert recorded == [1.0, 2.0, 4.0, 8.0, 16.0, 30.0, 30.0]

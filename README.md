@@ -41,7 +41,7 @@ cp .env.example .env   # 至少填 WAYCAST_HUB_URL
 uv run --locked loom
 ```
 
-出现 `loom> ` 提示符后，每敲一行回车就发一条输入帧；`Ctrl-D`（EOF）正常退出，`Ctrl-C` 即刻退出。hub 不可达时模块每 3 秒重连一次。
+出现 `loom> ` 提示符后，每敲一行回车就发一条输入帧；`Ctrl-D`（EOF）正常退出，`Ctrl-C` 即刻退出。hub 不可达时按指数退避重连：首次等 1 秒，每失败一次翻倍、封顶 30 秒（带 ±20% 随机抖动），成功入连后复位。
 
 ## 命名来历
 
